@@ -22,18 +22,21 @@
 					<swiper-item v-for="(list,num) in proTitleListTier" :index="num" :key="num">
 						<u-grid :col="5" @click="click" :border="false">
 							<u-grid-item v-for="(item, index) in list" :index="index" :key="index">
-								<u-icon :name="item" :size="46"></u-icon>
-								<text class="grid-text">{{ '宫格' + (index + 1) }}</text>
+								<!-- <image src="" mode=""></image> -->
+								<div>
+									<img src="" alt="">
+									<p></p>
+								</div>
+								<div>{{ item.name }}</div>
 							</u-grid-item>
 						</u-grid>
 					</swiper-item>
 				</swiper>
 				<view class="indicator-dots">
-					<view class="indicator-dots-item" :class="[current == 0 ? 'indicator-dots-active' : '']">
-					</view>
-					<view class="indicator-dots-item" :class="[current == 1 ? 'indicator-dots-active' : '']">
-					</view>
-					<view class="indicator-dots-item" :class="[current == 2 ? 'indicator-dots-active' : '']">
+					<view class="indicator-dots-item" 
+						v-for="(list,num) in proTitleListTier" 
+						:index="num" :key="num" 
+						:class="[current == num ? 'indicator-dots-active' : '']">
 					</view>
 				</view>
 			</div>
@@ -58,12 +61,12 @@
 		},
 		computed:{
 			...mapGetters(["proTitleList","currentAddress","taskbarHight"]),
-			proTitleListTier:()=>{
-				let k = Math.ceil(this.proTitleList.length / 10);
+			proTitleListTier:(vm)=>{
+				let k = Math.ceil(vm.proTitleList.length / 10);
 				let data = [];
 				for(let i=0;i<k;i++){
-					let num = i === (k-1) ? (this.proTitleList.length - 1) : (i * 10 + 9)
-					data.push(this.proTitleList.slice((i * 10),num))
+					let num = i === (k-1) ? (vm.proTitleList.length) : (i * 10 + 10)
+					data.push(vm.proTitleList.slice((i * 10),num))
 				}
 				return data
 			}
@@ -73,18 +76,18 @@
 			init(cd){
 				cd ? this.getCurrentAddress(true) :this.getCurrentAddress();
 				this.getTaskbarHight();
-				// this.time = new Date().Time("yyyy-MM-dd hh:mm:ss");
-				// this.$refs[SlideTitle].getListData(cd).then(res=>{
-				// 	console.log("成功")
-				// 	cd && cd();
-				// }).catch(err=>{
-				// 	console.log("失败");
-				// 	cd && cd();
-				// })
+				this.getProTitleList().then(res=>{
+					console.log("成功")
+					cd && cd();
+				}).catch(err=>{
+					console.log("失败");
+					cd && cd();
+				})
 			},
 			change(e) {
 				this.current = e.detail.current;
 			}
+			// this.time = new Date().Time("yyyy-MM-dd hh:mm:ss");
 		}
 	}
 </script>
@@ -165,7 +168,7 @@
 					background-color: rgba(0,0,0,0) !important;
 				}
 				.u-grid-item-box{
-					padding: 0;
+					padding-top: 24rpx;
 				}
 			}
 			.indicator-dots {

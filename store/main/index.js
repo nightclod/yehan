@@ -22,7 +22,7 @@ export default{
 		}
 	},
     actions: {
-		getProTitleList({commit},params){
+		getProTitleList({commit}){
 			return new Promise((resolve, reject) => {
 				// axios.get('',{
 				// 	params:{
