@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "首页",
-  "navigationBarBackgroundColor": "#fff",
-  "usingComponents": {
-    "home": "/pages/home/index",
-    "category": "/pages/category/index",
-    "mine": "/pages/mine/index"
-  }
-}

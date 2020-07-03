@@ -42,7 +42,6 @@
 </template>
 <script>
 	import {mapActions,mapGetters} from 'vuex';
-	import SlideTitle from './slide-title.vue';
 	export default {
 		name:'home',
 		data() {
@@ -56,7 +55,6 @@
 			this.init();
 		},
 		components:{
-			SlideTitle
 		},
 		computed:{
 			...mapGetters(["proTitleList","currentAddress","taskbarHight"]),

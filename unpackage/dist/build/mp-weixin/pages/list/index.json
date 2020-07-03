@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "列表",
-  "navigationBarBackgroundColor": "#fff",
-  "usingComponents": {
-    "uni-transition": "/components/uni-transition/uni-transition"
-  }
-}
