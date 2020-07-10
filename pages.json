@@ -3,6 +3,7 @@
 		"^u-(.*)": "@/uview-ui/components/u-$1/u-$1.vue"
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		
 		{
 			"path": "pages/main/index",
 			"style": {
@@ -11,6 +12,13 @@
 				"usingComponents": {
 					"icon": "/wxcomponents/icon/icon"
 				}
+			}
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationBarBackgroundColor":"#fff"
 			}
 		},
 		{

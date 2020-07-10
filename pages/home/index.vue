@@ -1,18 +1,26 @@
 <template>
 	<div id='home' class='home'>
-		<div class="home_title">
-			<div class="taskbar" :style="'height:'+taskbarHight+'px'"></div>
-			<div class="navigation">
-				<div class="site">
-					<div class="icon">
-						<i class='iconfont icon-dingwei'></i>
+		<div :style="'height:' + (Math.round(Number(taskbarHight * 750) / windowWidth) + 90) + 'rpx;'">
+			<div class="home_title" :style="'background:'+ (sticky ? ';' : '#fefefe;')">
+				<div class="taskbar" :style="'height:'+taskbarHight+'px'"></div>
+				<div class="navigation">
+					<div class="site" v-if="sticky">
+						<div class="icon">
+							<i class='iconfont icon-dingwei'></i>
+						</div>
+						<div class="siteInfo">{{currentAddress}}</div>
+						<div class="gt">
+							<u-icon name="arrow-right" size="20"></u-icon>
+						</div>
 					</div>
-					<div class="siteInfo">{{currentAddress}}</div>
-					<div class="gt"> &gt; </div>
+					<div class="seek" v-else>
+						<i class='iconfont icon-sousuo'></i>
+						<p>好吃烧烤摊，20起送</p>
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="home_main" :style="'margin-top:'+ (Number(taskbarHight) + 44) +'px;'">
+		<div class="home_main" >
 			<div class="seek">
 				<i class='iconfont icon-sousuo'></i>
 				<p>好吃烧烤摊，20起送</p>
@@ -20,14 +28,10 @@
 			<div class="product">
 				<swiper class="swiper" @change="change" >
 					<swiper-item v-for="(list,num) in proTitleListTier" :index="num" :key="num">
-						<u-grid :col="5" @click="click" :border="false">
-							<u-grid-item v-for="(item, index) in list" :index="index" :key="index">
-								<!-- <image src="" mode=""></image> -->
-								<div>
-									<img src="" alt="">
-									<p></p>
-								</div>
-								<div>{{ item.name }}</div>
+						<u-grid :col="5"  :border="false">
+							<u-grid-item v-for="(item, index) in list" :index="index" :key="index" @click="goList(item.name)">
+								<image class="pic" :src="item.pic" mode=""></image>
+								<b>{{ item.name }}</b>
 							</u-grid-item>
 						</u-grid>
 					</swiper-item>
@@ -51,7 +55,7 @@
 			return {
 				time : "",
 				current: 0,
-				list: ['integral', 'kefu-ermai', 'coupon', 'gift', 'scan', 'pause-circle', 'wifi', 'email', 'list']
+				sticky:true
 			}
 		},
 		onReady:function (){
@@ -60,7 +64,7 @@
 		components:{
 		},
 		computed:{
-			...mapGetters(["proTitleList","currentAddress","taskbarHight"]),
+			...mapGetters(["proTitleList","currentAddress","taskbarHight","windowWidth"]),
 			proTitleListTier:(vm)=>{
 				let k = Math.ceil(vm.proTitleList.length / 10);
 				let data = [];
@@ -72,22 +76,33 @@
 			}
 		},
 		methods: {
-			...mapActions(["getProTitleList","getCurrentAddress","getTaskbarHight"]),
+			...mapActions(["getProTitleList","getCurrentAddress","getSystemInfo","authorizeSite"]),
 			init(cd){
-				cd ? this.getCurrentAddress(true) :this.getCurrentAddress();
-				this.getTaskbarHight();
+				this.authorizeSite(()=>{
+					this.getCurrentAddress(cd ? true : false);
+				})
+				this.getSystemInfo();
 				this.getProTitleList().then(res=>{
-					console.log("成功")
 					cd && cd();
 				}).catch(err=>{
-					console.log("失败");
 					cd && cd();
 				})
 			},
 			change(e) {
 				this.current = e.detail.current;
+			},
+			goList(data){
+				uni.navigateTo({
+				    url: '../list/index?info='+data
+				});
 			}
+			
+			
+			
 			// this.time = new Date().Time("yyyy-MM-dd hh:mm:ss");
+		},
+		mounted() {
+			
 		}
 	}
 </script>
@@ -96,23 +111,25 @@
 		background: linear-gradient(left, #fec44d, #fee04d);
 	}
 	.home_title{
+		transition:all .1s;
 		width: 100%;
 		background: linear-gradient(left, #fec44d, #fee04d);
+		background-color: #fed04d;
 		position: fixed;
 		top: 0;
 		z-index: 1000;
 		.navigation{
-			height: 44px;
+			height: 90rpx;
 			.site{
 				display: flex;
 				height: 44px;
 				line-height: 44px;
-				width: 540rpx;
+				width: 70%;
 				.icon{
 					height: 44px;
 					margin-left: 30rpx;
 					margin-right: 10rpx;
-					width: 40rpx;
+					width: 48rpx;
 					i{
 						font-size: 40rpx;
 					}
@@ -129,13 +146,35 @@
 					margin-left: 10rpx;
 				}
 			}
+			.seek{
+				margin: 14rpx 20rpx 0;
+				background-color: #f1f1f2;
+				border-radius: 50rpx;
+				width: 68%;
+				height: 60rpx;
+				display: flex;
+				line-height: 60rpx;
+				color: #868788;
+				i{
+					margin-left: 30rpx;
+				}
+				p{
+					margin:0 10rpx;
+					white-space:nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+			}
 		}
+			
 	}
 	.home_main{
 		border-top-left-radius: 50rpx;
 		border-top-right-radius: 50rpx;
-		background-color: #fcfcfd;
+		background: linear-gradient(to bottom, #fff, #f5f5f6 344rpx, #f5f5f6);
 		padding-top: 30rpx;
+		height: 3000rpx;
+		margin-top: 0;
 		.seek{
 			margin: 0 20rpx;
 			background-color: #f1f1f2;
@@ -157,7 +196,6 @@
 		}
 		.product{
 			background-color: #fff;
-			background-color: #aaa;
 			width: 703rpx;
 			margin: 22rpx 23.5rpx;
 			border-radius: 20rpx;
@@ -166,9 +204,19 @@
 				height: 288rpx;
 				.u-grid-item{
 					background-color: rgba(0,0,0,0) !important;
-				}
-				.u-grid-item-box{
-					padding-top: 24rpx;
+					.u-grid-item-box{
+						padding-top: 24rpx;
+						padding-bottom: 0;
+					}
+					.pic {
+						width: 87rpx;
+						height: 87rpx;
+					}
+					b {
+						font-size: 22rpx;
+						height: 22rpx;
+						line-height: 22rpx;
+					}
 				}
 			}
 			.indicator-dots {

@@ -1,33 +1,31 @@
 <template>
-	<div id="main" class="dis-flex flex-dir-col height100">
-		<div class="main flex-1 over-scr">
+	<div id="main" class="dis-flex flex-dir-col">
+		<div class="main">
 			<home ref="home" v-if="pageType == 'home' ? true : false"></home>
 			<category ref="category" v-if="pageType == 'category' ? true : false"></category>
 			<mine ref="mine" v-if="pageType == 'mine' ? true : false"></mine>
 		</div>
-		<div class="nav">
-			<div id="menu" class="menu">
-				<div @click="home">  
-					<div class="main_icon">
-						<icon v-if="keyi==1" icon="shouye" size="40"></icon>
-						<i v-else class='iconfont icon-shouye'></i>
-					</div>
-					<p :class="keyi==1?'typei':''">首页</p>
+		<div id="menu" class="menu">
+			<div @click="home">  
+				<div class="main_icon">
+					<icon v-if="keyi==1" icon="shouye" size="40"></icon>
+					<i v-else class='iconfont icon-shouye'></i>
 				</div>
-				<div @click="category">
-					<div class="main_icon">
-						<icon v-if="keyi==2" icon="jilu" size="40"></icon>
-						<i v-else class='iconfont icon-jilu'></i>
-					</div>
-					<p :class="keyi==2?'typei':''">分类</p>
+				<p :class="keyi==1?'typei':''">首页</p>
+			</div>
+			<div @click="category">
+				<div class="main_icon">
+					<icon v-if="keyi==2" icon="jilu" size="40"></icon>
+					<i v-else class='iconfont icon-jilu'></i>
 				</div>
-				<div @click="mine">
-					<div class="main_icon">
-						<icon v-if="keyi==3" icon="wode" size="40"></icon>
-						<i v-else class='iconfont icon-wode'></i>
-					</div>
-					<p :class="keyi==3?'typei':''">我的</p>
+				<p :class="keyi==2?'typei':''">分类</p>
+			</div>
+			<div @click="mine">
+				<div class="main_icon">
+					<icon v-if="keyi==3" icon="wode" size="40"></icon>
+					<i v-else class='iconfont icon-wode'></i>
 				</div>
+				<p :class="keyi==3?'typei':''">我的</p>
 			</div>
 		</div>
 	</div>
@@ -36,6 +34,7 @@
 	import Home from '../home/index.vue'
 	import Category from '../category/index.vue'
 	import Mine from '../mine/index.vue'
+	import {mapActions,mapGetters} from 'vuex';
 	export default {
 		data() {
 			return {
@@ -63,8 +62,10 @@
 					});
 				}
 			}
-			if(option.data){
-				console.log(option.data);
+		},
+		onPageScroll: function(res) {//监听滚动
+			if(this.keyi === 1){
+				this.$refs['home'].sticky = res.scrollTop > 53 ? false : true;
 			}
 		},
 		onPullDownRefresh() {
@@ -87,7 +88,11 @@
 			Category,
 			Mine
 		},
+		computed:{
+			...mapGetters(["userId"])
+		},
 		methods: {
+			...mapActions(["getSystemInfo","logtypechange"]),
 			home(){
 				if(this.keyi == 1){return}
 				this.keyi = 1;
@@ -112,18 +117,25 @@
 				    title: '我的'
 				});
 			}
-			
+		},
+		mounted() {
+			this.getSystemInfo();
+			if(this.userId === ""){
+				uni.getStorage({
+					key: 'yehan_user_info',
+					success: (res)=>{
+						let data = JSON.parse(res.data);
+						if(data.id !== ""){
+							this.logtypechange(data.id);
+						}
+					}
+				});
+			}
 		}
 	}
 </script>
 <style lang="scss">
-	page{
-		height: 100%;
-	}
-	.nav{
-		height: 104rpx;
-		position: relative;
-	}
+	.main{overflow: scroll;}
 	.menu{
 		position: fixed;
 		height: 104rpx;
@@ -154,6 +166,4 @@
 			}
 		}
 	}
-	
-	
 </style>
