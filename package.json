@@ -5,7 +5,7 @@
   "dependencies": {
     "@dcloudio/uni-ui": "^1.1.9",
     "axios": "^0.19.2",
-    "copy-webpack-plugin": "^5.1.1"
+    "copy-webpack-plugin": "^11.0.0"
   },
   "devDependencies": {},
   "scripts": {
